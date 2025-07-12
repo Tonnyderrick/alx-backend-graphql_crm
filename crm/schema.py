@@ -2,9 +2,10 @@ import graphene
 from .models import Product
 
 class UpdateLowStockProducts(graphene.Mutation):
-    class Output:
-        message = graphene.String()
-        updated_products = graphene.List(graphene.String)
+    """Mutation to update low-stock products by restocking them."""
+
+    message = graphene.String()
+    updated_products = graphene.List(graphene.String)
 
     def mutate(self, info):
         updated = []
