@@ -131,6 +131,12 @@ CRONJOBS = [
     ('*/5 * * * *', 'crm.cron.log_crm_heartbeat'),
 ]
 
+CRONJOBS = [
+    # ... any previous jobs
+    ('0 */12 * * *', 'crm.cron.update_low_stock'),
+]
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

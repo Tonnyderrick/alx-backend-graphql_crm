@@ -1,34 +1,34 @@
-#!/usr/bin/env python3
-"""
-Cron job for logging heartbeat messages every 5 minutes.
-"""
-
 from datetime import datetime
 import requests
-from gql.transport.requests import RequestsHTTPTransport
-from gql import gql, Client
 
-def log_crm_heartbeat():
+def update_low_stock() -> None:
     """
-    Logs a timestamped heartbeat message to confirm CRM is alive.
-    Also tries to query the GraphQL hello field to verify it's working.
+    Executes the UpdateLowStockProducts mutation and logs updated product stock levels.
     """
-    log_file = "/tmp/crm_heartbeat_log.txt"
-    timestamp = datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
-    message = f"{timestamp} CRM is alive\n"
+    log_file = "/tmp/low_stock_updates_log.txt"
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    query = """
+    mutation {
+        updateLowStockProducts {
+            message
+            updatedProducts
+        }
+    }
+    """
 
     try:
         response = requests.post(
             "http://localhost:8000/graphql",
-            json={"query": "{ hello }"},
+            json={"query": query},
             headers={"Content-Type": "application/json"}
         )
-        if response.status_code == 200:
-            message = f"{timestamp} CRM is alive (GraphQL OK)\n"
-        else:
-            message = f"{timestamp} CRM is alive (GraphQL ERROR)\n"
-    except Exception as e:
-        message = f"{timestamp} CRM is alive (GraphQL FAIL: {str(e)})\n"
 
-    with open(log_file, "a") as f:
-        f.write(message)
+        data = response.json().get("data", {}).get("updateLowStockProducts", {})
+        with open(log_file, "a") as f:
+            f.write(f"[{timestamp}] {data.get('message')}\n")
+            for product in data.get("updatedProducts", []):
+                f.write(f"  - {product}\n")
+
+    except Exception as e:
+        with open(log_file, "a") as f:
+            f.write(f"[{timestamp}] ERROR: {str(e)}\n")
