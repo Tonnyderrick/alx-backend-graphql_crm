@@ -129,10 +129,6 @@ STATIC_URL = 'static/'
 
 CRONJOBS = [
     ('*/5 * * * *', 'crm.cron.log_crm_heartbeat'),
-]
-
-CRONJOBS = [
-    # ... any previous jobs
     ('0 */12 * * *', 'crm.cron.update_low_stock'),
 ]
 
