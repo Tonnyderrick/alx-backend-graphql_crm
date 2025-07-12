@@ -1,19 +1,7 @@
 #!/bin/bash
-# This script deletes customers with no orders in the last year and logs the result
+# Deletes customers with no orders in the past year and logs the result.
 
-LOG_FILE="/tmp/customer_cleanup_log.txt"
-TIMESTAMP=$(date "+%Y-%m-%d %H:%M:%S")
+timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+deleted_count=$(echo "from crm.models import Customer; from django.utils import timezone; from datetime import timedelta; one_year_ago = timezone.now() - timedelta(days=365); deleted, _ = Customer.objects.filter(last_order__lt=one_year_ago).delete(); print(deleted)" | python3 manage.py shell 2>/dev/null)
 
-DELETED_COUNT=$(echo "
-from datetime import datetime, timedelta
-from crm.models import Customer
-
-one_year_ago = datetime.nw() - tiedelta(days=365)
-inactive_customeroms = Customer.objects.filter(order__isnull=True, created_at__lt=one_year_ago)
-count = inactive_customers.count()
-inactive_customers.delete()
-print(count)
-" | python3 manage.py shell)
-
-echo "$TIMESTAMP - Deleted $DELETED_COUNT inactive customers" >> "$LOG_FILE"
-
+echo "[$timestamp] Deleted $deleted_count inactive customers" >> /tmp/customer_cleanup_log.txt
