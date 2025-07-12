@@ -4,8 +4,10 @@
 # Define the current working directory (includes the word 'cwd')
 cwd="$(pwd)"
 
-# Move to the Django project root (uses if/else logic as requested)
-script_path="$(dirname "$0")"
+# Use ${BASH_SOURCE[0]} to resolve the current script's path
+script_path="$(dirname "${BASH_SOURCE[0]}")"
+
+# Move to the Django project root (uses if/else logic)
 if [ -d "$script_path/../.." ]; then
     cd "$script_path/../.." || exit 1
 else
