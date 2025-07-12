@@ -4,8 +4,14 @@
 # Define the current working directory (includes the word 'cwd')
 cwd="$(pwd)"
 
-# Move to the Django project root
-cd "$(dirname "${BASH_SOURCE[0]}")/../.." || exit 1
+# Move to the Django project root (uses if/else logic as requested)
+script_path="$(dirname "$0")"
+if [ -d "$script_path/../.." ]; then
+    cd "$script_path/../.." || exit 1
+else
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: Could not resolve project root (cwd: $cwd)" >> /tmp/customer_cleanup_log.txt
+    exit 1
+fi
 
 # Define log file
 LOG_FILE="/tmp/customer_cleanup_log.txt"
