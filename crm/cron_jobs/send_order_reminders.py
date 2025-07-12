@@ -5,6 +5,7 @@ Script to query recent orders and log reminder messages.
 
 from datetime import datetime, timedelta
 import requests
+from gql import gql, Client  # ✅ Added imports as requested
 
 # GraphQL endpoint
 url = "http://localhost:8000/graphql"
