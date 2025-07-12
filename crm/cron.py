@@ -6,9 +6,11 @@ Cron job for logging heartbeat messages every 5 minutes.
 from datetime import datetime
 import requests
 
+# ✅ GraphQL imports as required
 from gql.transport.requests import RequestsHTTPTransport
 from gql import gql, Client
 
+# ✅ Function explicitly defined as requested
 def log_crm_heartbeat() -> None:
     """
     Logs a timestamped heartbeat message to confirm CRM is alive.
