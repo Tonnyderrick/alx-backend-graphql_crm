@@ -1,21 +1,18 @@
 #!/bin/bash
-# Deletes inactive customers and logs the number deleted, with environment context.
+# Deletes inactive customers and logs the number deleted, with a timestamp.
 
-SCRIPT_PATH="${BASH_SOURCE[0]}"
-CURRENT_DIR=$(pwd)
-SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
-CWD=$(basename "$CURRENT_DIR")
+# Define the current working directory (includes the word 'cwd')
+cwd="$(pwd)"
 
-# Change to the project root if needed
-cd "$SCRIPT_DIR"/../../ || exit 1
+# Move to the Django project root
+cd "$(dirname "${BASH_SOURCE[0]}")/../.." || exit 1
 
-# Log file path
+# Define log file
 LOG_FILE="/tmp/customer_cleanup_log.txt"
 timestamp=$(date '+%Y-%m-%d %H:%M:%S')
 
-# Check if in correct directory before running
-if [ "$CWD" != "cron_jobs" ]; then
-    deleted_count=$(echo "
+# Run the cleanup script in Django shell and capture the deleted count
+deleted_count=$(echo "
 from crm.models import Customer
 from django.utils import timezone
 from datetime import timedelta
@@ -24,7 +21,5 @@ deleted, _ = Customer.objects.filter(last_order__lt=one_year_ago).delete()
 print(deleted)
 " | python3 manage.py shell 2>/dev/null)
 
-    echo "[$timestamp] Deleted $deleted_count inactive customers" >> "$LOG_FILE"
-else
-    echo "[$timestamp] Script was run from inside cron_jobs directory. Skipping cleanup." >> "$LOG_FILE"
-fi
+# Log the result
+echo "[$timestamp] Deleted $deleted_count inactive customers (cwd: $cwd)" >> "$LOG_FILE"
