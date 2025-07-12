@@ -5,13 +5,10 @@ Cron job for logging heartbeat messages every 5 minutes.
 
 from datetime import datetime
 import requests
-
-# ✅ GraphQL imports as required
 from gql.transport.requests import RequestsHTTPTransport
 from gql import gql, Client
 
-# ✅ Function explicitly defined as requested
-def log_crm_heartbeat() -> None:
+def log_crm_heartbeat():
     """
     Logs a timestamped heartbeat message to confirm CRM is alive.
     Also tries to query the GraphQL hello field to verify it's working.
@@ -20,7 +17,6 @@ def log_crm_heartbeat() -> None:
     timestamp = datetime.now().strftime("%d/%m/%Y-%H:%M:%S")
     message = f"{timestamp} CRM is alive\n"
 
-    # Optional GraphQL hello query check
     try:
         response = requests.post(
             "http://localhost:8000/graphql",
