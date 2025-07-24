@@ -54,11 +54,12 @@ class CreateCustomer(graphene.Mutation):
         if input.phone and not re.match(r"^\+?\d{7,15}$|^\d{3}-\d{3}-\d{4}$", input.phone):
             raise Exception("Invalid phone format")
 
-        customer = Customer.objects.create(
+        customer = Customer(
             name=input.name,
             email=input.email,
             phone=input.phone or ''
         )
+        customer.save()  # ✅ Explicit .save()
         return CreateCustomer(customer=customer, message="Customer created successfully")
 
 
@@ -81,11 +82,12 @@ class BulkCreateCustomers(graphene.Mutation):
                 if data.phone and not re.match(r"^\+?\d{7,15}$|^\d{3}-\d{3}-\d{4}$", data.phone):
                     raise ValidationError("Invalid phone format")
 
-                customer = Customer.objects.create(
+                customer = Customer(
                     name=data.name,
                     email=data.email,
                     phone=data.phone or ''
                 )
+                customer.save()  # ✅ Explicit .save()
                 created.append(customer)
             except Exception as e:
                 errors.append(f"Customer {data.name}: {str(e)}")
@@ -105,11 +107,12 @@ class CreateProduct(graphene.Mutation):
         if input.stock is not None and input.stock < 0:
             raise Exception("Stock cannot be negative")
 
-        product = Product.objects.create(
+        product = Product(
             name=input.name,
             price=input.price,
             stock=input.stock if input.stock is not None else 0
         )
+        product.save()  # Optional but consistent
         return CreateProduct(product=product)
 
 
@@ -131,11 +134,12 @@ class CreateOrder(graphene.Mutation):
 
         total = sum(p.price for p in products)
 
-        order = Order.objects.create(
+        order = Order(
             customer=customer,
             order_date=input.order_date or now(),
             total_amount=total
         )
+        order.save()
         order.products.set(products)
         return CreateOrder(order=order)
 
